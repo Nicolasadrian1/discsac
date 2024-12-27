@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test DISC Adaptado a Calidad del Servicio y Experiencia de Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .question, .results, .welcome, .instructions {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-screen" class="welcome active">
+        <h1>Test DISC Adaptado a Calidad del Servicio y Experiencia de Cliente</h1>
+        <p>Este test te ayudará a descubrir tu perfil DISC y cómo puedes aplicar estrategias enfocadas en la calidad del servicio y la experiencia del cliente. Selecciona la opción que más y menos te representa para cada pregunta.</p>
+        <button id="view-instructions">Ver Instrucciones</button>
+    </div>
+    <div id="instructions" class="instructions">
+        <h2>Instrucciones</h2>
+        <p>1. Este test consta de 28 preguntas con cuatro afirmaciones cada una.</p>
+        <p>2. Para cada pregunta, selecciona una afirmación que te represente "MÁS" y otra que te represente "MENOS".</p>
+        <p>3. No puedes seleccionar "MÁS" y "MENOS" para la misma afirmación.</p>
+        <p>4. Responde con sinceridad, pensando en cómo reaccionas y actúas en situaciones laborales relacionadas con el servicio al cliente.</p>
+        <p>5. Al finalizar, recibirás un informe adaptado a tu perfil de servicio, con sugerencias específicas y pasos a seguir para mejorar la experiencia del cliente.</p>
+        <button id="start-test">Iniciar Test</button>
+    </div>
+    <div id="test-container"></div>
+    <div id="results" class="results">
+        <h2>Resultados de tu Test DISC Adaptado a Calidad del Servicio y Experiencia de Cliente</h2>
+        <div id="behavior-report"></div>
+        <button id="download-report">Descargar Reporte</button>
+        <button id="restart-test">Reiniciar Test</button>
+    </div>
+    <script>
+        const preguntas = [
+            ["Soy asertivo y decidido.", "Disfruto socializar con los demás.", "Prefiero ambientes tranquilos y estables.", "Me concentro en los detalles y las normas."],
+            ["Soy un líder natural.", "Soy persuasivo y entusiasta.", "Soy confiable y paciente.", "Soy analítico y meticuloso."],
+            ["Tomo decisiones rápidamente.", "Me adapto fácilmente a diferentes situaciones.", "Valoro la estabilidad en mi entorno.", "Sigo procedimientos establecidos con precisión."],
+            ["Me gusta asumir el control en situaciones desafiantes.", "Inspiro a otros con mis ideas y entusiasmo.", "Soy leal y confiable en mi equipo.", "Analizo todos los detalles antes de actuar."],
+            ["Soy directo y enfocado en resultados.", "Fomento la colaboración entre las personas.", "Soy constante y confiable.", "Evalúo cuidadosamente las normas y políticas."],
+            ["Prefiero resolver problemas de manera inmediata.", "Disfruto motivar a otros para alcanzar metas.", "Me gusta mantener un ambiente armónico.", "Cumplo con estándares de calidad altos."],
+            ["Asumo riesgos cuando es necesario.", "Creo conexiones significativas con los demás.", "Proporciono apoyo constante a mi equipo.", "Analizo los datos antes de tomar decisiones."],
+            ["Soy competitivo y ambicioso.", "Me enfoco en generar confianza en las personas.", "Prefiero estabilidad en los procesos.", "Valoro los procedimientos bien definidos."],
+            ["Tiendo a liderar en situaciones críticas.", "Tengo un enfoque positivo y motivador.", "Soy paciente y consistente.", "Cumplo con las reglas y regulaciones."],
+            ["Me gusta fijar metas ambiciosas.", "Soy carismático y persuasivo.", "Prefiero trabajar en un entorno predecible.", "Detallo cada paso antes de avanzar."],
+            ["Actúo rápidamente ante problemas urgentes.", "Genero entusiasmo en mi equipo.", "Valoro la tranquilidad en mi entorno.", "Sigo estándares elevados de precisión."],
+            ["Soy decidido y orientado al logro.", "Fomento un ambiente de colaboración.", "Proporciono estabilidad a los demás.", "Analizo minuciosamente cada situación."],
+            ["Prefiero asumir la responsabilidad.", "Disfruto interactuar con diferentes personas.", "Ofrezco apoyo constante.", "Soy preciso en mis acciones."],
+            ["Estoy orientado a cumplir objetivos concretos.", "Soy persuasivo y comunicativo.", "Mantengo una actitud equilibrada y tranquila.", "Sigo normas con rigor."],
+            ["Tomo el control de situaciones complicadas.", "Construyo relaciones sólidas.", "Soy confiable en situaciones de incertidumbre.", "Cumplo estrictamente con las políticas."],
+            ["Me gusta estar al frente de desafíos grandes.", "Motivo a mi equipo con mi entusiasmo.", "Soy un apoyo constante para los demás.", "Analizo todas las posibilidades antes de decidir."],
+            ["Actúo con rapidez y confianza.", "Transmito optimismo en cualquier situación.", "Prefiero un ritmo constante y controlado.", "Verifico cada detalle cuidadosamente."],
+            ["Asumo el liderazgo de forma natural.", "Animo a otros a colaborar.", "Fomento la calma en situaciones de presión.", "Analizo datos antes de decidir."],
+            ["Me enfoco en alcanzar resultados excepcionales.", "Inspiro a otros con mi visión.", "Proporciono tranquilidad a mi equipo.", "Cumplo estrictamente con los procedimientos."],
+            ["Resuelvo conflictos de manera directa.", "Soy sociable y adaptable.", "Soy constante y confiable.", "Valoro las reglas claras."],
+            ["Tomo decisiones rápidamente en momentos críticos.", "Motivo a otros a alcanzar su potencial.", "Ofrezco apoyo y estabilidad.", "Analizo profundamente antes de actuar."],
+            ["Soy competitivo y busco el éxito.", "Valoro las relaciones interpersonales.", "Prefiero trabajar en un entorno estable.", "Sigo normas rigurosamente."],
+            ["Asumo riesgos y desafíos importantes.", "Soy empático y comunicativo.", "Soy paciente y tranquilo.", "Detallo mis acciones cuidadosamente."],
+            ["Estoy orientado a la acción y el logro.", "Genero confianza en mi equipo.", "Soy un pilar de estabilidad.", "Cumplo con precisión los estándares definidos."],
+            ["Tomo decisiones firmes en situaciones de presión.", "Fomento el entusiasmo en los demás.", "Proporciono seguridad emocional a mi equipo.", "Analizo profundamente los detalles."],
+            ["Me gusta fijar metas altas.", "Soy optimista y persuasivo.", "Mantengo una actitud calmada y constante.", "Sigo procedimientos con exactitud."],
+            ["Actúo con determinación y rapidez.", "Establezco relaciones significativas.", "Soy un modelo de tranquilidad.", "Valoro la precisión en cada acción."]
+        ];
+
+        const dimensiones = ["Dominancia", "Influencia", "Estabilidad", "Conformidad"];
+        const testContainer = document.getElementById("test-container");
+        let currentQuestion = 0;
+        const results = { Dominancia: 0, Influencia: 0, Estabilidad: 0, Conformidad: 0 };
+
+        function generateBehaviorReport(results) {
+            const maxScore = Math.max(...Object.values(results));
+            const dominantDimension = Object.keys(results).find(key => results[key] === maxScore);
+            let report = "";
+
+            if (dominantDimension === "Dominancia") {
+                report = `Tu perfil predominante es Dominancia. Eres resolutivo y directo, ideal para manejar situaciones críticas con rapidez. 
+                <strong>Fortalezas:</strong> Capacidad para resolver problemas y tomar decisiones rápidas. 
+                <strong>Áreas de oportunidad:</strong> Mostrar mayor empatía y comprensión con el cliente. 
+                <strong>Sugerencias:</strong> Utiliza tu enfoque en resultados para garantizar que las quejas se resuelvan eficientemente, pero asegúrate de comunicarte con amabilidad y respeto.`;
+            } else if (dominantDimension === "Influencia") {
+                report = `Tu perfil predominante es Influencia. Eres carismático y motivador, lo que te permite generar una excelente relación con los clientes. 
+                <strong>Fortalezas:</strong> Comunicación efectiva y capacidad para inspirar confianza. 
+                <strong>Áreas de oportunidad:</strong> Seguir procesos establecidos para mantener la calidad del servicio. 
+                <strong>Sugerencias:</strong> Usa tu carisma para fidelizar a los clientes, asegurándote de cumplir con las políticas de servicio.`;
+            } else if (dominantDimension === "Estabilidad") {
+                report = `Tu perfil predominante es Estabilidad. Eres confiable y consistente, cualidades esenciales para brindar una experiencia de cliente positiva. 
+                <strong>Fortalezas:</strong> Paciencia y capacidad para manejar situaciones difíciles con calma. 
+                <strong>Áreas de oportunidad:</strong> Agilizar la atención para responder a las necesidades del cliente en tiempo y forma. 
+                <strong>Sugerencias:</strong> Usa tu enfoque en estabilidad para manejar conflictos, pero trabaja en la eficiencia del servicio.`;
+            } else if (dominantDimension === "Conformidad") {
+                report = `Tu perfil predominante es Conformidad. Eres analítico y detallista, lo que garantiza que se cumplan los estándares de calidad. 
+                <strong>Fortalezas:</strong> Atención al detalle y cumplimiento de procedimientos. 
+                <strong>Áreas de oportunidad:</strong> Mostrar mayor flexibilidad y adaptabilidad en interacciones con los clientes. 
+                <strong>Sugerencias:</strong> Usa tu rigor para garantizar la calidad, pero adáptate a situaciones imprevistas con empatía.`;
+            } else {
+                report = `Tienes un perfil equilibrado. Combinas características de los diferentes estilos DISC, lo que te permite adaptarte a diversas necesidades del cliente. 
+                <strong>Fortalezas:</strong> Versatilidad y capacidad para manejar diferentes situaciones. 
+                <strong>Áreas de oportunidad:</strong> Identificar un estilo predominante para maximizar tu impacto. 
+                <strong>Sugerencias:</strong> Aprovecha tu flexibilidad para personalizar la atención según las expectativas del cliente.`;
+            }
+
+            return report;
+        }
+
+        function showQuestion(index) {
+            testContainer.innerHTML = "";
+            if (index < preguntas.length) {
+                const questionDiv = document.createElement("div");
+                questionDiv.className = "question active";
+                questionDiv.innerHTML = `<p><strong>Pregunta ${index + 1}:</strong></p>`;
+                preguntas[index].forEach((option, i) => {
+                    questionDiv.innerHTML += `
+                        <div class="options">
+                            <label><input type="radio" name="mas_${index}" value="${dimensiones[i]}"> Más - ${option}</label>
+                            <label><input type="radio" name="menos_${index}" value="${dimensiones[i]}"> Menos - ${option}</label>
+                        </div>
+                    `;
+                });
+                const nextButton = document.createElement("button");
+                nextButton.textContent = "Siguiente";
+                nextButton.onclick = () => {
+                    const mas = document.querySelector(`input[name="mas_${index}"]:checked`);
+                    const menos = document.querySelector(`input[name="menos_${index}"]:checked`);
+                    if (mas && menos && mas.value !== menos.value) {
+                        results[mas.value] += 1;
+                        results[menos.value] -= 1;
+                        currentQuestion++;
+                        showQuestion(currentQuestion);
+                    } else {
+                        alert("Por favor selecciona opciones distintas para 'Más' y 'Menos'.");
+                    }
+                };
+                questionDiv.appendChild(nextButton);
+                testContainer.appendChild(questionDiv);
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const behaviorReport = generateBehaviorReport(results);
+            document.getElementById("behavior-report").innerHTML = behaviorReport;
+            document.getElementById("results").classList.add("active");
+        }
+
+        function downloadReport() {
+            const behaviorReport = generateBehaviorReport(results).replace(/<[^>]*>/g, '');
+            const reportContent = `Resultados de tu Test DISC Adaptado a Calidad del Servicio y Experiencia de Cliente:\n\n${behaviorReport}`;
+            const blob = new Blob([reportContent], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Resultados_DISC_Calidad_Servicio.txt";
+            link.click();
+        }
+
+        document.getElementById("view-instructions").addEventListener("click", () => {
+            document.getElementById("welcome-screen").classList.remove("active");
+            document.getElementById("instructions").classList.add("active");
+        });
+
+        document.getElementById("start-test").addEventListener("click", () => {
+            document.getElementById("instructions").classList.remove("active");
+            testContainer.classList.add("active");
+            showQuestion(currentQuestion);
+        });
+
+        document.getElementById("download-report").addEventListener("click", downloadReport);
+    </script>
+</body>
+</html>
